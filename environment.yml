@@ -1,16 +1,14 @@
 name: gladgan
 channels:
   - conda-forge
-  - pytorch
 dependencies:
-  - python=3.8
+  - python=3.10
+  - pytorch>=2.0
   - numpy
   - scikit-learn
   - matplotlib
-  - graph-tool
   - pip
   - pandas
   - jsonpickle
-  - fastparquet
-  - pip:
-    - networkx==2.0
+  - pyarrow
+  - networkx>=2.5

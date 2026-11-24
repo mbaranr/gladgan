@@ -21,7 +21,10 @@ def read_graphfile(datadir, dataname, quiet, max_nodes=None):
         with open(filename_nodes) as f:
             for line in f:
                 line=line.strip("\n")
-                node_labels+=[int(line) - 1]
+                # index labels as written: Tox21/AIDS are 0-based, most TU sets 1-based. Subtracting 1 turned
+                # Tox21's label 0 (O) into index -1, i.e. the last slot, whose position differed between the
+                # training and testing files.
+                node_labels+=[int(line)]
         num_unique_node_labels = max(node_labels) + 1
     except IOError:
         if not quiet:
@@ -42,17 +45,13 @@ def read_graphfile(datadir, dataname, quiet, max_nodes=None):
     filename_graphs=prefix + '_graph_labels.txt'
     graph_labels=[]
 
-    label_vals = []
+    # raw labels are kept as-is; mapping to normal (0) / anomalous (1) happens in main.prepare_data.
+    # (Remapping here by first-seen order made class 0 depend on file order, which differs between
+    # Tox21 training and testing files.)
     with open(filename_graphs) as f:
         for line in f:
-            line=line.strip("\n")
-            val = int(line)
-            if val not in label_vals:
-                label_vals.append(val)
-            graph_labels.append(val)
-
-    label_map_to_int = {val: i for i, val in enumerate(label_vals)}
-    graph_labels = np.array([label_map_to_int[l] for l in graph_labels])
+            graph_labels.append(int(line.strip()))
+    graph_labels = np.array(graph_labels)
 
     filename_adj=prefix + '_A.txt'
     adj_list={i:[] for i in range(1,len(graph_labels)+1)}    

@@ -1,0 +1,1 @@
+{"test": 0.18871252204585537, "val": 0.4397759103641457, "method": "gladc", "DS": "BZR", "feat": "label", "cv_fold": 4, "seed": 1, "lr": 1e-05}

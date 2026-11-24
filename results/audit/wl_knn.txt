@@ -1,0 +1,6 @@
+BZR           graphs=  405 anom=0.21 n= 35.8  size(label-free)=0.574  size(best dir, oracle)=0.640  WL-kNN=0.779 ± 0.064  size(label-free) sd=0.077
+COX2          graphs=  467 anom=0.22 n= 41.2  size(label-free)=0.551  size(best dir, oracle)=0.614  WL-kNN=0.689 ± 0.093  size(label-free) sd=0.096
+DHFR          graphs=  756 anom=0.39 n= 42.4  size(label-free)=0.452  size(best dir, oracle)=0.600  WL-kNN=0.588 ± 0.050  size(label-free) sd=0.035
+AIDS          graphs= 2000 anom=0.20 n= 15.7  size(label-free)=0.990  size(best dir, oracle)=0.997  WL-kNN=0.298 ± 0.040  size(label-free) sd=0.007
+MUTAG         graphs=  188 anom=0.34 n= 17.9  size(label-free)=0.848  size(best dir, oracle)=0.880  WL-kNN=0.893 ± 0.021  size(label-free) sd=0.094
+NCI109        graphs= 4127 anom=0.50 n= 29.7  size(label-free)=0.549  size(best dir, oracle)=0.681  WL-kNN=0.815 ± 0.019  size(label-free) sd=0.032

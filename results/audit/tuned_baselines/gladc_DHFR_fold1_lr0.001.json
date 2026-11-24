@@ -1,0 +1,1 @@
+{"test": 0.4756816507000736, "val": 0.6546866014951122, "method": "gladc", "DS": "DHFR", "feat": "label", "cv_fold": 1, "seed": 1, "lr": 0.001}

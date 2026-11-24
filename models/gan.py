@@ -9,15 +9,19 @@ class Generator(nn.Module):
                  z_dim: int, 
                  num_nodes: int, 
                  num_features: int, 
-                 dropout: float=.0):
+                 dropout: float=.0,
+                 size_cond: bool=False):
         
         super(Generator, self).__init__()
 
         self.num_nodes = num_nodes
         self.num_features = num_features
+        # size conditioning: the node count n is observed, so G gets it as input instead of having to
+        # sample it (and drop the rare large graphs); generate_graphs masks every slot past n
+        self.size_cond = size_cond
  
         layers = []
-        for c0, c1 in zip([z_dim] + conv_dim[:-1], conv_dim):
+        for c0, c1 in zip([z_dim + int(size_cond)] + conv_dim[:-1], conv_dim):
             layers.append(nn.Linear(c0, c1))
             layers.append(nn.BatchNorm1d(c1))  # do not apply to critic
             layers.append(nn.Tanh())
@@ -32,8 +36,10 @@ class Generator(nn.Module):
         if dropout > 0.001:
             self.dropout_layer = nn.Dropout(p=dropout)
 
-    def forward(self, z):
-        
+    def forward(self, z, n=None):
+        if self.size_cond:
+            z = torch.cat((z, (n.float() / self.num_nodes).unsqueeze(-1)), -1)
+
         output = self.multidense_layer(z)
 
         # shape [batch_size, num_nodes, num_nodes]
@@ -58,20 +64,37 @@ class Discriminator(nn.Module):
                  conv_dim: list,
                  aggr_dim: int, 
                  linear_dim: list,
-                 device: torch.device,
+                 device: torch.device=None,
                  dropout: float=.0,
-                 activation: Optional[Callable[[torch.Tensor], torch.Tensor]]=torch.sigmoid):
+                 activation: Optional[Callable[[torch.Tensor], torch.Tensor]]=None,
+                 num_nodes: Optional[int]=None):
+        # WGAN critic: output must be unbounded, so no activation by default
     
         super(Discriminator, self).__init__()
 
         gc_input_dim, gc_output_dim = conv_dim    # gc_output_dim is a list
+        # the critic also sees each node's degree: row-normalized (mean) aggregation is blind to
+        # how many neighbours a node has, so without it the generator gets no signal on density
+        gc_input_dim = gc_input_dim + 1
 
-        self.gcn_layer = GraphConv_(gc_input_dim, gc_output_dim, dropout=dropout, device=device)
+        # no per-node L2 normalization in the critic: padded nodes are exact zero vectors and
+        # normalizing them has an unbounded gradient, which makes the gradient penalty inf
+        self.gcn_layer = GraphConv_(gc_input_dim, gc_output_dim, dropout=dropout, device=device, normalize_embedding=False)
         self.agg_layer = GraphAggr(gc_output_dim[-1]+gc_input_dim, aggr_dim, dropout=dropout)
+
+        # optional order-aware branch: an MLP over the flattened (canonically ordered) adjacency and
+        # features. The GNN branch cannot see node layout, so without this branch the generator is free
+        # to store information in where nodes are placed, which an encoder then cannot read back.
+        self.flat_layer = None
+        dense_in = aggr_dim
+        if num_nodes is not None:
+            self.flat_layer = nn.Sequential(nn.Linear(num_nodes * num_nodes + num_nodes * gc_input_dim, 512), nn.LeakyReLU(),
+                                            nn.Linear(512, aggr_dim), nn.LeakyReLU())
+            dense_in = 2 * aggr_dim
 
         # multi dense layer
         layers = []
-        for c0, c1 in zip([aggr_dim]+linear_dim[:-1], linear_dim):
+        for c0, c1 in zip([dense_in]+linear_dim[:-1], linear_dim):
             layers.append(nn.Linear(c0,c1))
             # layers.append(nn.LayerNorm(c1))     # layer norm -> drop-in replacement to batch norm
             layers.append(nn.Dropout(dropout))
@@ -82,15 +105,19 @@ class Discriminator(nn.Module):
         self.activation = activation
 
     def forward(self, x, adj):
-        
+
+        x = torch.cat((x, adj.sum(-1, keepdim=True)), -1)
         hidden = self.gcn_layer(x, adj)
         hidden = torch.cat((hidden, x), -1)
         hidden = self.agg_layer(hidden, torch.tanh)
+        if self.flat_layer is not None:
+            hidden = torch.cat((hidden, self.flat_layer(torch.cat((adj.flatten(1), x.flatten(1)), 1))), -1)
 
         hidden = self.multidense_layer(hidden)
 
         output = self.output_layer(hidden)
-        output = self.activation(output)
+        if self.activation is not None:
+            output = self.activation(output)
 
         return output, hidden
 

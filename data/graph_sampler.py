@@ -5,7 +5,7 @@ import torch.utils.data
 from utils.graph_processing import *
 
 class GraphSampler(torch.utils.data.Dataset):
-    def __init__(self, G_list, features='default', normalize=True, max_num_nodes=0):
+    def __init__(self, G_list, features='default', normalize=True, max_num_nodes=0, label_dim=None):
         self.adj_all = []
         self.len_all = []
         self.feature_all = []
@@ -31,6 +31,14 @@ class GraphSampler(torch.utils.data.Dataset):
 
                 for i,u in enumerate(G.nodes()):
                     f[i,:] = node_dict(G)[u]['feat']
+                self.feature_all.append(f)
+
+            # one-hot node labels (e.g. atom types)
+            elif features == 'label':
+                f = np.zeros((self.max_num_nodes, label_dim), dtype=float)
+                for i, u in enumerate(G.nodes()):
+                    lab = node_dict(G)[u]['label']
+                    f[i, :len(lab)] = lab
                 self.feature_all.append(f)
 
             # assigning node feature as its degree

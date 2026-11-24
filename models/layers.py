@@ -35,7 +35,8 @@ class GraphConv(nn.Module):
                  add_self: bool=True,
                  normalize_embedding: bool=True,
                  expect_normal: bool=False,
-                 device: torch.device=None
+                 device: torch.device=None,
+                 add_self_loops: bool=True
                  ):
                
         super(GraphConv, self).__init__()
@@ -44,6 +45,7 @@ class GraphConv(nn.Module):
         self.add_self = add_self
         self.dropout = dropout
         self.normalize_embedding = normalize_embedding
+        self.add_self_loops = add_self_loops
 
         self.device = device or torch.device("mps" if torch.backends.mps.is_available() else "cpu")
 
@@ -64,10 +66,12 @@ class GraphConv(nn.Module):
         x = x.to(self.device)
         adj = adj.to(self.device)   
 
-        if not self.expect_normal:
-            adj_n = normalize_adj(adj)
+        if self.add_self_loops:
+            # A + I: keeps every row sum >= 1, so normalization (and its gradient) stays bounded
+            adj = adj + torch.eye(adj.size(-1), device=adj.device)
 
-        adj = adj_n
+        if not self.expect_normal:
+            adj = normalize_adj(adj)
 
         if self.dropout > 0.001:
             x = self.dropout_layer(x)
@@ -85,7 +89,7 @@ class GraphConv(nn.Module):
             if hidden.dim() == 3:
                 hidden = F.normalize(hidden, p=2, dim=2, eps=1e-12)
             elif hidden.dim() == 2:
-                hidden = F.normalize(hidden, p=2, dim=2, eps=1e-12)
+                hidden = F.normalize(hidden, p=2, dim=1, eps=1e-12)
 
         return hidden
 

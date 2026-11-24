@@ -1,0 +1,1 @@
+{"test": 0.3498526160648489, "val": 0.4031052328924669, "method": "glocalkd", "DS": "DHFR", "feat": "label", "cv_fold": 3, "seed": 1, "lr": 0.001}

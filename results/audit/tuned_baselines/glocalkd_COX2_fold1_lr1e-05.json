@@ -1,0 +1,1 @@
+{"test": 0.5192433137638618, "val": 0.4555084745762712, "method": "glocalkd", "DS": "COX2", "feat": "label", "cv_fold": 1, "seed": 1, "lr": 1e-05}

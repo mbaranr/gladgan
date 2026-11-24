@@ -1,7 +1,21 @@
 __pycache__/
 *.py[cod]
 *$py.class
+.DS_Store
+
+# data (datasets.zip is tracked; extract it, or run exp/fetch_molecular.sh)
 datasets/
-bin/
-checkpoints/
+
+# training outputs (main.py writes these into the working directory)
+/bin/
+/checkpoints/
+/plots/
+runs/
+scores.pkl
+*.pth
+
 notebooks/
+
+# official baseline repos, cloned by baselines/setup.sh
+baselines/gladc/
+baselines/glocalkd/

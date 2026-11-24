@@ -1,0 +1,102 @@
+[
+ {
+  "test": 0.6764657598499062,
+  "val": 0.6438237017505309,
+  "method": "glocalkd",
+  "DS": "NCI109",
+  "feat": "label",
+  "cv_fold": 0,
+  "seed": 1,
+  "lr": 0.0001
+ },
+ {
+  "test": 0.40543503752345217,
+  "val": 0.41598000439463856,
+  "method": "gladc",
+  "DS": "NCI109",
+  "feat": "label",
+  "cv_fold": 0,
+  "seed": 1,
+  "lr": 0.0001
+ },
+ {
+  "test": 0.6430728189493433,
+  "val": 0.6229125466930344,
+  "method": "glocalkd",
+  "DS": "NCI109",
+  "feat": "label",
+  "cv_fold": 1,
+  "seed": 1,
+  "lr": 0.0001
+ },
+ {
+  "test": 0.40059216697936206,
+  "val": 0.44089211162381897,
+  "method": "gladc",
+  "DS": "NCI109",
+  "feat": "label",
+  "cv_fold": 1,
+  "seed": 1,
+  "lr": 0.0001
+ },
+ {
+  "test": 0.6263502791654423,
+  "val": 0.6526587563172929,
+  "method": "glocalkd",
+  "DS": "NCI109",
+  "feat": "label",
+  "cv_fold": 2,
+  "seed": 1,
+  "lr": 0.0001
+ },
+ {
+  "test": 0.41337643255950635,
+  "val": 0.4394089211162382,
+  "method": "gladc",
+  "DS": "NCI109",
+  "feat": "label",
+  "cv_fold": 2,
+  "seed": 1,
+  "lr": 0.0001
+ },
+ {
+  "test": 0.6157019936054167,
+  "val": 0.6571174833369955,
+  "method": "glocalkd",
+  "DS": "NCI109",
+  "feat": "label",
+  "cv_fold": 3,
+  "seed": 1,
+  "lr": 0.0001
+ },
+ {
+  "test": 0.41904504419785593,
+  "val": 0.41674906613931006,
+  "method": "gladc",
+  "DS": "NCI109",
+  "feat": "label",
+  "cv_fold": 3,
+  "seed": 1,
+  "lr": 0.0001
+ },
+ {
+  "test": 0.640763118299793,
+  "val": 0.6253753753753754,
+  "method": "glocalkd",
+  "DS": "NCI109",
+  "feat": "label",
+  "cv_fold": 4,
+  "seed": 1,
+  "lr": 0.0001
+ },
+ {
+  "test": 0.43034723528305435,
+  "val": 0.45406687174979865,
+  "method": "gladc",
+  "DS": "NCI109",
+  "feat": "label",
+  "cv_fold": 4,
+  "seed": 1,
+  "lr": 0.0001
+ }
+]

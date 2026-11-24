@@ -1,44 +1,33 @@
-import pandas as pd
-import numpy as np
 import networkx as nx
-import jsonpickle
+import numpy as np
+import pandas as pd
 from pathlib import Path
 
-def log_graph(adj_mat: np.array, 
-              gloss: float, 
-              dloss: float, 
-              epoch: int,
-              out_file: str="bin/graphs.parquet"):
+_buffer = []
+
+
+def log_graph(adj_mat: np.ndarray, gloss: float, dloss: float, epoch: int, n_samples: int = 3):
     """
-    Log a batch of graphs to a file. Each graph is represented as an adjacency matrix.
+    Buffer a few generated graphs (adjacency matrices) from a batch. Call flush_graph_log() to write.
     """
-    records = []
+    import jsonpickle  # only needed with --log_graphs
     batch_size = adj_mat.shape[0]
-    
-    random_indices = np.random.choice(batch_size, size=3, replace=False)
-    for i in random_indices:
-        single_adj_mat = adj_mat[i]
-    
-        graph = nx.from_numpy_array(single_adj_mat)
-        
-        # serialize the graph
-        graph_str = jsonpickle.encode(graph)
-        
-        # create a record for the current graph
-        record = {
+    for i in np.random.choice(batch_size, size=min(n_samples, batch_size), replace=False):
+        _buffer.append({
             "epoch": epoch,
             "gloss": gloss,
             "dloss": dloss,
-            "graph_id": i,
-            "graph": graph_str
-        }
-        records.append(record)
+            "graph_id": int(i),
+            "graph": jsonpickle.encode(nx.from_numpy_array(adj_mat[i])),
+        })
 
+
+def flush_graph_log(out_file: str = "bin/graphs.parquet"):
+    global _buffer
+    if not _buffer:
+        return
+    df = pd.DataFrame(_buffer)
     if Path(out_file).exists():
-        df = pd.read_parquet(out_file)
-        df = pd.concat([df, pd.DataFrame(records)], ignore_index=True)
-    else:
-        # new df
-        df = pd.DataFrame(records)
-
+        df = pd.concat([pd.read_parquet(out_file), df], ignore_index=True)
     df.to_parquet(out_file, index=False)
+    _buffer = []

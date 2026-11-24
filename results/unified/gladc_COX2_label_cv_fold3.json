@@ -1,0 +1,1 @@
+{"test": 0.4630136986301371, "val": 0.5296610169491525, "method": "gladc", "DS": "COX2", "feat": "label", "cv_fold": 3, "seed": 1}
