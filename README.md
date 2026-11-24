@@ -18,22 +18,7 @@ Test AUC, mean ± std over 5 stratified folds. The majority class is treated as 
 
 ## Usage
 
-The datasets come from the [TUDataset collection](https://chrsmrrs.github.io/datasets/docs/datasets/)
-(BZR, COX2, DHFR, AIDS, MUTAG, NCI1, NCI109, Tox21). Download them into `datasets/` by hand or with the script:
-
-```bash
-conda env create -f environment.yml && conda activate gladgan
-bash exp/fetch_molecular.sh BZR          # or no arguments for every dataset used
-mkdir -p runs/BZR && cd runs/BZR
-python ../../main.py --DS BZR --cv_fold 0
-```
-
-Results are written to `bin/aucs.json`.
-
-GLADC and GLocalKD run from their official code, [XuexiongLuoMQ/GLADC](https://github.com/XuexiongLuoMQ/GLADC)
-(`3fe8921`) and [RongrongMa/GLocalKD](https://github.com/RongrongMa/GLocalKD) (`1c8c15f`). `baselines/setup.sh`
-clones both at those commits, and `baselines/reproduce_unified.py` runs them under the protocol above.
-`baselines/wl_knn.py` computes the WL-kNN and size-only columns.
+The datasets come from the [TUDataset collection](https://chrsmrrs.github.io/datasets/docs/datasets/).
 
 ## License
 
